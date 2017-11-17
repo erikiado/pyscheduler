@@ -1,0 +1,3 @@
+# This is a one line comment
+a = 5 #everything should be ignored after this #
+### this is no problem

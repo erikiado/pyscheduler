@@ -1,0 +1,16 @@
+None
+True
+False
+5 == 5
+5 is 5
+2 is not 3
+3 in [2,3]
+3 not in [2,3]
+3 > 4
+3 < 2
+2 >= 0
+0 <= 1
+'s' in '23s'
+5 != 4
+True or True
+True and True

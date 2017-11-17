@@ -1,0 +1,6 @@
+x = input()
+input()
+print(x)
+print('a')
+print(3)
+print(input())

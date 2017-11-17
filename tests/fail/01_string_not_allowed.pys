@@ -1,0 +1,6 @@
+a = 4
+'gol' = a;
+for 'hola' in a:
+	print(D)
+
+D = a;

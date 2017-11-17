@@ -1,0 +1,55 @@
+def nothing():
+	pass
+
+def something():
+	a = 5
+	return a
+
+a = something()
+
+if a is 5:
+	a = 4
+
+if a == 3:
+	a = 3
+else:
+	a = 5
+
+if a is not 5:
+	a = 3
+elif a == 2:
+	a = 2
+elif a is 5:
+	a = 0
+else:
+	a = 1
+
+while True:
+	break
+
+while not False:
+	if a == 5:
+		break
+	if a == 3:
+		print(a)
+		continue
+	a += 1
+
+for x in [0,1,2]:
+	a = x
+
+for x in [0,1,2]:
+	if x == 1:
+		break
+	if x == 0:
+		if a is x:
+			print('a is x')
+		print(a)
+		continue
+	a += 1
+
+every 1m until a == 10:
+	a += 1
+
+every 2s:
+	print('hi')
