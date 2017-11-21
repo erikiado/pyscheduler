@@ -2,7 +2,17 @@
 Pyscheduler is a python-like interpreter which incorporates time and processes as a native type. This allows for automation and scheduling of tasks in an easy and familiar way.
 
 ## How to run for development:
-Fisrt you need to install all the dependencies
+If you want you can create a virtual environment just to avoid conflicts with dependencies.
+```shell
+virtualenv --python=`which python3` ~/.myenvs/scheduler
+```
+
+Then activate the environment running: 
+```shell
+source ~/.myenvs/scheduler/bin/activate
+```
+
+Now for the interpreter, first you need to install all the dependencies
 ```shell
 pip install -r requirements.txt
 ```
