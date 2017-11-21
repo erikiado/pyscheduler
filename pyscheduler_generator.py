@@ -24,7 +24,7 @@ class PySchedulerGenerator(object):
         return node
 
     def get_every_code(self,node):
-        print(node.value)
+        # print(node.value)
         s = 'last_pyscheduler_second = time.time()\nwhile True:\n'
         self.indent_level += 1
         s += self.re_make_indent() 

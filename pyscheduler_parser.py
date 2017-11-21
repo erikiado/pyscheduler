@@ -509,7 +509,7 @@ class PySchedulerParser(PLYParser):
         if not source:
             source = "\n" 
         try: 
-            parse_tree = self.parser.parse(source, lexer=self.lexer,debug=2)
+            parse_tree = self.parser.parse(source, lexer=self.lexer,debug=False)
         except SyntaxError as err: 
             # Insert the missing data and reraise
             assert hasattr(err, "lineno"), "SyntaxError is missing lineno"

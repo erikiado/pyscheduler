@@ -3,18 +3,18 @@ from pyscheduler_worker import SchedulerWorker
 
 def seconds_passed(last,seconds):
     return ((time.time() - last) >= seconds)
-a = 5
-x = 600
-if a is 5:
-    x = 5
-
-sc = SchedulerWorker('test_script.py')
+x = 3
+cont = 0
 last_pyscheduler_second = time.time()
 while True:
     time.sleep(1)
     if seconds_passed(last_pyscheduler_second,x):
         last_pyscheduler_second = time.time()
-        print('hi')
-        sc.run()
+        if cont % 2 == 0:
+            SchedulerWorker('test_script.py').run()
 
-sc.kill()
+        if cont % 2 == 1:
+            SchedulerWorker('test_script2.sh').run()
+
+        cont = cont + 1
+

@@ -1,12 +1,9 @@
-a = 5
-x = 10m
-if a is 5:
-	x = 5s
 
-sc = p'test_script.py'
-
+x = 3s
+cont = 0
 every x:
-	print('hi')
-	start sc
-
-kill sc
+	if cont % 2 == 0:
+		start p'test_script.py'
+	if cont % 2 == 1:
+		start p'test_script2.sh'
+	cont = cont + 1
