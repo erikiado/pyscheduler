@@ -52,3 +52,9 @@ class SchedulerWorker(threading.Thread):
 # for x in range( 20 ):
 	# print(x)
 	# SchedulerWorker(x).start()
+
+# import os
+# import stat
+
+# st = os.stat('somefile')
+# os.chmod('somefile', st.st_mode | stat.S_IEXEC)

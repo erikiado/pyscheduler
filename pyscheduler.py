@@ -42,7 +42,6 @@ tokens = [
     ] + list(reserved.values())
 
 # Tokens
-
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_POW   = r'\*\*'
@@ -249,7 +248,8 @@ def p_start_stmt(p):
 def p_input_stmt(p):
     """input_stmt : INPUT parameters
     """
-    p[0] = p[1]
+    v = input(p[2])
+    p[0] = v
 
 # output_stmt: 'output' parameters
 def p_output_stmt(p):
