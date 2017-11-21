@@ -1,9 +1,9 @@
 import pdb
 
-class ZAst(object):
+class PySchedulerAST(object):
     pass
 
-class Program(ZAst):
+class Program(PySchedulerAST):
     
     def __init__(self,stmts):
         self.stmts = [stmts]
@@ -12,7 +12,7 @@ class Program(ZAst):
         self.stmts.append(stmt) 
         return self
 
-class StmtList(ZAst):
+class StmtList(PySchedulerAST):
 
     def __init__(self,value):
         self.stmts = [value]
@@ -21,20 +21,20 @@ class StmtList(ZAst):
         self.stmts.append(v)
         return self
 
-class Stmt(ZAst):
+class Stmt(PySchedulerAST):
 
     def __init__(self,t,value=None):
         self.type = t
         self.value = value
 
-class Func(ZAst):
+class Func(PySchedulerAST):
 
     def __init__(self,params,body):
         self.params = params
         self.body = body
         self.type = 'func'
 
-class Class(ZAst):
+class Class(PySchedulerAST):
 
     def __init__(self,pclass,body):
         self.pclass = pclass
@@ -42,12 +42,12 @@ class Class(ZAst):
         self.type = 'cls'
 
 
-class Const(ZAst):
+class Const(PySchedulerAST):
 
     def __init__(self,value):
         self.value = value
 
-class ParamList(ZAst):
+class ParamList(PySchedulerAST):
 
     def __init__(self,params):
         if isinstance(params,list):
@@ -59,7 +59,7 @@ class ParamList(ZAst):
         self.params.append(param)
         return self
 
-class Param(ZAst):
+class Param(PySchedulerAST):
 
     def __init__(self,t,v1=None,v2=None):
         self.type = t
@@ -73,7 +73,7 @@ class Param(ZAst):
         elif self.type == 'direct':
             self.value = v1
 
-class NameList(ZAst):
+class NameList(PySchedulerAST):
 
     def __init__(self,name):
 
@@ -83,25 +83,37 @@ class NameList(ZAst):
         self.names.append(name)
         return self 
 
-class Arith(ZAst):
+class Arith(PySchedulerAST):
 
     def __init__(self,op,v1=None,v2=None):
         self.op = op
         self.v1 = v1
         self.v2 = v2
 
-class Suite(ZAst):
+class Suite(PySchedulerAST):
 
     def __init__(self,suite):
         self.suite = suite
 
-class Test(ZAst):
+class TestList(PySchedulerAST):
+
+    def __init__(self,tests):
+        if isinstance(tests,list):
+            self.tests = tests
+        else:
+            self.tests = [tests]
+
+    def add(self,test):
+        self.tests.append(test)
+        return self
+
+class Test(PySchedulerAST):
     def __init__(self,op,v1=None,v2=None):
         self.op = op
         self.v1 = v1
         self.v2 = v2
 
-class TrailerList(ZAst):
+class TrailerList(PySchedulerAST):
 
     def __init__(self,t):
         self.ts = [t]
@@ -110,20 +122,20 @@ class TrailerList(ZAst):
         self.ts.append(t)
         return self
 
-class Trailer(ZAst):
+class Trailer(PySchedulerAST):
 
     def __init__(self,op,value):
         self.op = op
         self.value = value
 
-class Item(ZAst):
+class Item(PySchedulerAST):
 
     def __init__(self,t,v1=None,v2=None):
         self.type = t
         self.v1 = v1
         self.v2 = v2
 
-class Atom(ZAst):
+class Atom(PySchedulerAST):
 
     def __init__(self,t,value):
         self.type = t

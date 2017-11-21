@@ -1,0 +1,12 @@
+a = 5
+x = 10m
+if a is 5:
+	x = 5s
+
+sc = p'test_script.py'
+
+every x:
+	print('hi')
+	start sc
+
+kill sc

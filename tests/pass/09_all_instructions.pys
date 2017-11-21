@@ -1,11 +1,10 @@
-def nothing():
-	pass
+#def nothing():
+#	pass
+#
+#def something():
+#	a = 5
+#	return a
 
-def something():
-	a = 5
-	return a
-
-a = something()
 b = 3
 c = a + b
 d = a - 2
@@ -38,7 +37,7 @@ while not False:
 	if a == 3:
 		print(a)
 		continue
-	a += 1
+	a = a + 1
 
 for x in [0,1,2]:
 	a = x
@@ -51,15 +50,16 @@ for x in [0,1,2]:
 			print('a is x')
 		print(a)
 		continue
-	a += 1
+	a = a + 1
 
 sc = p'script.py'
-every 1m until (a == 10 and (True or a == 15)):
-	a += 1
-	th = start(sc)
+every 1m until a == 10:
+	a = a+1
+	start sc
 
+inp = 'text'
 every 2s:
 	print('hi')
-	print(input())
+	print(inp)
 
-kill(sc)
+kill sc

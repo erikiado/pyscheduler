@@ -38,28 +38,30 @@ class PySchedulerLexer(object):
     tokens = []
 
     reserved = {
-       'if': 'IF',
-       'while': 'WHILE',
-       'def': 'FUNCDEF',
-       'pass': 'PASS',
-       'for': 'FOR',
-       'every': 'EVERY',
-       'until': 'UNTIL',
-       'continue': 'CONTINUE',
-       'break': 'BREAK',
-       'return': 'RETURN',
-       'start': 'START',
-       'kill': 'KILL',
-       'is':'ISEQ',
-       'and':'CAND',
-       'or':'COR',
-       'in':'IN',
-       'not': 'NOT',
-       'print': 'PRINT',
-       'input': 'INPUT',
-       'True': 'TRUE',
-       'False': 'FALSE',
-       'None': 'NONE',
+        'if': 'IF',
+        'elif': 'ELIF',
+        'else': 'ELSE',
+        'while': 'WHILE',
+        'def': 'FUNCDEF',
+        'pass': 'PASS',
+        'for': 'FOR',
+        'every': 'EVERY',
+        'until': 'UNTIL',
+        'continue': 'CONTINUE',
+        'break': 'BREAK',
+        'return': 'RETURN',
+        'start': 'START',
+        'kill': 'KILL',
+        'is':'ISEQ',
+        'and':'CAND',
+        'or':'COR',
+        'in':'IN',
+        'not': 'NOT',
+        'print': 'PRINT',
+        'input': 'INPUT',
+        'True': 'TRUE',
+        'False': 'FALSE',
+        'None': 'NONE',
     }
 
     tokens = [
@@ -159,7 +161,7 @@ class PySchedulerLexer(object):
         assert not t.lexer.is_raw, "only occurs outside of quoted strings"
         t.lexer.lineno += 1
 
-    def t_NEWLINE(self,t):
+    def t_newline(self,t):
         r"\n+"
         t.lexer.lineno += len(t.value)
         t.type = "NEWLINE"
@@ -184,6 +186,14 @@ class PySchedulerLexer(object):
     def t_RBRACK(self,t):
         r'\]'
         t.lexer.paren_count -= 1
+        return t
+
+    def t_PROCESS(self,t):
+        r"p'(([^'\n]|(\\'))*)+[.sh|.py]'"
+        return t
+
+    def t_TIME(self,t):
+        r"(((\d+h){1}(\d+m)?(\d+s)?(\d+ms)?)|((\d+m){1}(\d+s)?(\d+ms)?)|((\d+s){1}(\d+ms)?)|((\d+ms){1})){1}"
         return t
 
     @TOKEN(tokenize.Floatnumber)
@@ -211,13 +221,6 @@ class PySchedulerLexer(object):
         t.value = (int(value), t.value)
         return t
 
-    def t_PROCESS(self,t):
-        r"p'(([^'\n]|(\\'))*)+[.sh|.py]'"
-        return t
-
-    def t_TIME(self,t):
-        r"(((\d+h){1}(\d+m)?(\d+s)?(\d+ms)?)|((\d+m){1}(\d+s)?(\d+ms)?)|((\d+s){1}(\d+ms)?)|((\d+ms){1})){1}"
-        return t
 
     error_message = {
         "STRING_START_TRIPLE": "EOF while scanning triple-quoted string",

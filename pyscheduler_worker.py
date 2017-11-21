@@ -8,7 +8,9 @@ class SchedulerWorker(threading.Thread):
 	def __init__(self, file_name):
 		super(SchedulerWorker, self).__init__()
 		self.original_file_name = file_name
-		self.file_name = file_name[2:-1]
+		if 'p\'' in file_name:
+			file_name = file_name[2:-1]
+		self.file_name = file_name
 		self.directory = os.getcwd() + '/'
 		self.full_path = self.directory + self.file_name
 		validation = os.path.isfile(self.full_path)
@@ -18,7 +20,7 @@ class SchedulerWorker(threading.Thread):
 	def run(self):
 		if '.py' in self.file_name:
 			self.process = subprocess.run(['python3',self.file_name])
-			print(self.process)
+			# print(self.process)
 			print('Started')
 		elif '.sh' in self.file_name:
 			try:
@@ -28,7 +30,7 @@ class SchedulerWorker(threading.Thread):
 				self.process = None
 				print('Not started')
 				print('Permission Error: Try changing the execution permission on the file. (chmod u+x '+ self.file_name +')')
-			print(self.process)
+			# print(self.process)
 		else:
 			print(self.file_name + ' language is not supported.')
 
@@ -39,7 +41,8 @@ class SchedulerWorker(threading.Thread):
 			return self.file_name + ' is not a valid file.'
 
 	def is_complete(self):
-		print(self.process)
+		# print(self.process)
+		pass
 
 	def bg(self):
 		print(self.file_name)
