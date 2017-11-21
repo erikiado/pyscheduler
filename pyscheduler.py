@@ -4,6 +4,7 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 from pyscheduler_worker import SchedulerWorker
+import pys_ast
 
 reserved = {
    'if': 'IF',
@@ -299,7 +300,7 @@ def p_compound_stmt(p):
 def p_if_stmt(p):
     """if_stmt  : IF test COLON simple_stmt
     """
-    p[0] = p[1]
+    p[0] = pys_ast.Stmt('IF',[p[2],p[4]])
 
 
 # while_stmt: 'while' test ':' simple_stmt
