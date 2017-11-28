@@ -1,10 +1,4 @@
-#def nothing():
-#	pass
-#
-#def something():
-#	a = 5
-#	return a
-
+a = 1
 b = 3
 c = a + b
 d = a - 2
@@ -36,7 +30,7 @@ while not False:
 		break
 	if a == 3:
 		print(a)
-		continue
+		break
 	a = a + 1
 
 for x in [0,1,2]:
@@ -52,14 +46,19 @@ for x in [0,1,2]:
 		continue
 	a = a + 1
 
-sc = p'script.py'
-every 1m until a == 10:
+sc = p'test_script.py'
+every 1s:
 	a = a+1
 	start sc
+	if a >2:
+		break
 
 inp = 'text'
 every 2s:
 	print('hi')
 	print(inp)
+	inp = inp + 's'
+	if inp == 'textss':
+		break
 
 kill sc

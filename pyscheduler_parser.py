@@ -51,6 +51,7 @@ class PySchedulerParser(PLYParser):
         """
             input_start : input_start stmt
         """
+        # print(p[1])
         p[0] = p[1].add(p[2])
 
 
@@ -68,7 +69,7 @@ class PySchedulerParser(PLYParser):
 
     def p_stmt_1(self,p):
         """
-            stmt    : stmt single_stmt
+            stmt    : stmt single_stmt 
         """
         p[0] = p[1].add(p[2])
 
@@ -81,26 +82,68 @@ class PySchedulerParser(PLYParser):
 
     def p_single_stmt(self,p):
         """
-            single_stmt :    simple_stmt NEWLINE
+            single_stmt : simple_stmt NEWLINE
+                        | simple_stmt
         """
-        p[0] = p[1]
+        if len(p) == 3:
+            p[0] = ast.Stmt('newline',p[1])
+        else:
+            p[0] = p[1]
 
     # funcdef: 'def' NAME parameters ':' simple_stmt
-    def p_function_definition(self, p):
+    def p_function_definition_1(self, p):
         """function_definition  : FUNCDEF ID parameters COLON suite
         """
+        # print(p)
+        p[0] = ast.Func(p[3],p[5],p[2])
 
-        p[0] = ast.Func(p[3],p[5])
+    def p_function_definition_2(self, p):
+        """function_definition  : FUNCDEF ID parameters COLON simple_stmt
+        """
+        # print(p)
+        # print(p[2])
+        p[0] = ast.Func(p[3],p[5],p[2])
 
     # parameters: '(' [testlist] ')'
     def p_parameters(self, p):
-        """parameters : LPAREN test_list RPAREN
+        """parameters : LPAREN paramlist RPAREN
                       | LPAREN RPAREN
         """
         if len(p) > 3:
             p[0] = ast.Trailer('(',p[2])
         else:
             p[0] = []
+
+    def p_paramlist(self,p):
+        """
+            paramlist : paramlist COMMA  param
+        """
+        p[0] = p[1].add(p[3])
+
+    def p_paramlist_2(self,p):
+        """
+            paramlist :  param
+        """
+        p[0] = ast.ParamList(p[1])
+
+    def p_param_1(self,p):
+        """
+            param : ID 
+        """
+        p[0] = ast.Param('default',p[1])
+
+    def p_param_2(self,p):
+        """param : INTEGER
+                  | STRING
+                  | TIME
+                  | FLOAT
+                  | PROCESS
+                  | TRUE
+                  | FALSE
+                  | NONE
+        """
+        p[0] = ast.Param('direct',p[1])
+
 
     # stmts: simple_stmt | compound_stmt
     # def p_stmts(self, p):
@@ -113,21 +156,22 @@ class PySchedulerParser(PLYParser):
     # simple_stmt: expr_stmt | pass_stmt | flow_stmt | start_stmt | kill_stmt | output_stmt | input_stmt
     def p_simple_stmt(self, p):
         """simple_stmt  : expr_stmt 
-                        | pass_stmt 
                         | flow_stmt 
                         | start_stmt 
                         | kill_stmt 
                         | output_stmt 
                         | input_stmt
                         | comment_stmt
-                        | test_stmt
+                        | test_atom
         """
         p[0] = p[1]
+                        # | test_stmt
 
     def p_comment_stmt(self, p):
         """comment_stmt  : COMMENT
         """
         p[0] = p[1]
+
 
     # expr_stmt: NAME  '=' test
     def p_expr_stmt(self, p):
@@ -136,11 +180,18 @@ class PySchedulerParser(PLYParser):
         p[0] = ast.Stmt('assign',[p[1],p[3]])
         self._insert_symbol_table(self.gen.visit(p[1]),'name')
 
-    def p_test_stmt(self, p):
-        """test_stmt  : test
+    def p_test_atom(self, p):
+        """test_atom  : atom
         """
         # names[p[1]] = p[3]
         p[0] = p[1]
+
+
+    # def p_atom_stmt(self, p):
+    #     """atom_stmt  : atom
+    #     """
+    #     # names[p[1]] = p[3]
+    #     p[0] = p[1]
 
     # pass_stmt: 'pass'
     def p_pass_stmt(self, p):
@@ -175,6 +226,7 @@ class PySchedulerParser(PLYParser):
     # flow_stmt: break_stmt | continue_stmt | return_stmt
     def p_flow_stmt(self, p):
         """flow_stmt  : break_stmt
+                      | pass_stmt 
                       | continue_stmt
                       | return_stmt
         """
@@ -219,7 +271,12 @@ class PySchedulerParser(PLYParser):
         p[0] = ast.Suite(p[3])
 
     # if_stmt: 'if' test ':' simple_stmt ('elif' test ':' simple_stmt)* ['else' ':' simple_stmt]
-    def p_if_stmt(self, p):
+    def p_if_stmt_1(self, p):
+        """if_stmt  : IF test COLON simple_stmt
+        """
+        p[0] = ast.Stmt('if',[p[2],p[4]])
+
+    def p_if_stmt_2(self, p):
         """if_stmt  : IF test COLON suite elif_stmts else_stmt
         """
         p[0] = ast.Stmt('if',[p[2],p[4],[p[5]],p[6]])
@@ -252,19 +309,24 @@ class PySchedulerParser(PLYParser):
         p[0] = ast.Stmt('while',[p[2],p[4]])
 
     # for_stmt: 'for' expr 'in' testlist ':' simple_stmt
-    def p_for_stmt(self, p):
+    def p_for_stmt_1(self, p):
+        """for_stmt   : FOR expr IN test_list COLON simple_stmt
+        """
+        p[0] = ast.Stmt('for',[p[2],p[4],p[6]])
+
+    def p_for_stmt_2(self, p):
         """for_stmt   : FOR expr IN test_list COLON suite
         """
         p[0] = ast.Stmt('for',[p[2],p[4],p[6]])
 
     # every_stmt: 'every' time ['until' time] ':' simple_stmt
-    def p_every_stmt(self, p):
+    def p_every_stmt_1(self, p):
         """every_stmt   : EVERY TIME until_stmt COLON suite
         """
         temp = ast.Atom('time',p[2])
         p[0] = ast.Stmt('every',[temp,p[3],p[5]])
 
-    def p_every_stmt(self, p):
+    def p_every_stmt_2(self, p):
         """every_stmt   : EVERY ID until_stmt COLON suite
         """
         temp = ast.Atom('name',p[2])
@@ -274,7 +336,7 @@ class PySchedulerParser(PLYParser):
     def p_until_stmt(self, p):
         """until_stmt   : UNTIL test
         """
-        p[0] = p[2]
+        p[0] = ast.Stmt('until',p[2])
 
 
     # test: or_test
@@ -489,27 +551,35 @@ class PySchedulerParser(PLYParser):
     def p_empty(self, p):
         '''until_stmt :
            elif_stmts : 
+           input_start : 
            else_stmt  :
-           trailer    :'''
+        '''
         # p[0] = []
         pass
 
     def p_error(self,p):
+        # print(p)
         if p:
-            self._parse_error('before: ' + p.value,  '')
+            if p.value:
+                if type(p.value) == tuple:
+                    print('Syntax error at: ' + p.value[1])
+                else:
+                    print('Syntax error at: ' + p.value)
+            else:
+                print('Syntax error at end of input') 
         else:
-            self._parse_error('At end of input', '') 
+            print('Syntax error at end of input') 
 
 
 
-    def parse(self,source, filename="<string>"):
+    def parse(self,source,filename="<string>",debug=True):
         # There is a bug in PLY 2.3; it doesn't like the empty string.
         # Bug reported and will be fixed for 2.4.
         # http://groups.google.com/group/ply-hack/msg/cbbfc50837818a29
         if not source:
             source = "\n" 
         try: 
-            parse_tree = self.parser.parse(source, lexer=self.lexer,debug=False)
+            parse_tree = self.parser.parse(source, lexer=self.lexer,debug=debug)
         except SyntaxError as err: 
             # Insert the missing data and reraise
             assert hasattr(err, "lineno"), "SyntaxError is missing lineno"

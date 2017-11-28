@@ -1,6 +1,5 @@
-x = input()
 input()
+x = 's'
 print(x)
 print('a')
 print(3)
-print(input())

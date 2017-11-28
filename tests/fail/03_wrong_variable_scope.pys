@@ -1,0 +1,7 @@
+a = 4
+print(a)
+
+def funcion():
+	b = 5
+
+print(b)

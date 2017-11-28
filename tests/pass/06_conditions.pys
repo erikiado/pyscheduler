@@ -1,16 +1,32 @@
-None
-True
-False
-5 == 5
-5 is 5
-2 is not 3
-3 in [2,3]
-3 not in [2,3]
-3 > 4
-3 < 2
-2 >= 0
-0 <= 1
-'s' in '23s'
-5 != 4
-True or True
-True and True
+if None:
+	pass
+if True:
+	pass
+if False:
+	pass
+if 5 == 5:
+	pass
+if 5 is 5:
+	pass
+if 2 is not 3:
+	pass
+if 3 in [2,3]:
+	pass
+if 3 not in [2,3]:
+	pass
+if 3 > 4:
+	pass
+if 3 < 2:
+	pass
+if 2 >= 0:
+	pass
+if 0 <= 1:
+	pass
+if 's' in '23s':
+	pass
+if 5 != 4:
+	pass
+if True or True:
+	pass
+if True and True:
+	pass

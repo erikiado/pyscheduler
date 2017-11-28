@@ -5,7 +5,7 @@ def something():
 	a = 5
 	return a
 
-a = something()
+a = 5
 
 if a is 5:
 	a = 4
@@ -32,8 +32,8 @@ while not False:
 		break
 	if a == 3:
 		print(a)
-		continue
-	a += 1
+		break
+	a = a+1
 
 for x in [0,1,2]:
 	a = x
@@ -46,10 +46,14 @@ for x in [0,1,2]:
 			print('a is x')
 		print(a)
 		continue
-	a += 1
+	a = a + 1
 
-every 1m until a == 10:
-	a += 1
+every 1s:
+	a = a+1
+	print(a)
+	if a == 5:
+		break
 
 every 2s:
 	print('hi')
+	break

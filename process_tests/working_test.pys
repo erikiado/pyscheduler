@@ -7,3 +7,5 @@ every x:
 	if cont % 2 == 1:
 		start p'test_script2.sh'
 	cont = cont + 1
+	if cont == 4:
+		break

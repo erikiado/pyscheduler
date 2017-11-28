@@ -29,8 +29,9 @@ class Stmt(PySchedulerAST):
 
 class Func(PySchedulerAST):
 
-    def __init__(self,params,body):
+    def __init__(self,params,body,name):
         self.params = params
+        self.name = name
         self.body = body
         self.type = 'func'
 

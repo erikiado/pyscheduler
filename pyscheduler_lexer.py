@@ -14,9 +14,17 @@ class PySchedulerLexer(object):
         self.lexer.is_raw = False
         self.lexer.filename = None
         self.token_stream = None
+        self.lexer.line_offsets = None
+        self.on_string = False
 
     def input(self, data, filename="<string>", add_endmarker=True):
         self.lexer.input(data)
+        # try:
+        #     for tok in self.lexer:
+        #         continue
+        # except Exception as e:
+        #     print(e)
+        #     # exit()
         self.lexer.paren_count = 0
         self.lexer.is_raw = False
         self.lexer.filename = filename
@@ -34,8 +42,6 @@ class PySchedulerLexer(object):
         return self.token_stream
 
     literal_to_name = {}
-
-    tokens = []
 
     reserved = {
         'if': 'IF',
@@ -70,9 +76,7 @@ class PySchedulerLexer(object):
         'EQUALS','CEQUALS','CNEQUALS', 
         'POW', 'PROCESS', 'LPAREN','RPAREN',
         'LBRACK','RBRACK', 'LT', 'GT', 'GE', 
-        'LE', 'COLON', 'MLMQSTRING', 'SLMQSTRING', 
-        'MLSQSTRING', 'SLSQSTRING', 'COMMENT', 'COMMA', 
-        'NEWLINE'
+        'LE', 'COLON', 'COMMENT', 'COMMA', 'NEWLINE'
     ] + list(reserved.values())
 
     # Tokens
@@ -100,11 +104,13 @@ class PySchedulerLexer(object):
         lineno, lexpos, lexer = t.lineno, t.lexpos, t.lexer
         filename = lexer.filename
         geek_lineno = lineno - 1
-        start_of_line = lexer.line_offsets[geek_lineno]
-        end_of_line = lexer.line_offsets[geek_lineno+1]-1
-        text = lexer.lexdata[start_of_line:end_of_line]
-        offset = lexpos - start_of_line
-        raise klass(message, (filename, lineno, offset+1, text))
+        if lexer.line_offsets:
+            start_of_line = lexer.line_offsets[geek_lineno]
+            end_of_line = lexer.line_offsets[geek_lineno+1]-1
+            text = lexer.lexdata[start_of_line:end_of_line]
+            offset = lexpos - start_of_line
+        # print('ERROR: '+ message)
+        # raise klass(message, (filename, lineno, offset+1, text))
 
     def raise_syntax_error(self, message, t):
         self._raise_error(message, t, SyntaxError)
@@ -160,6 +166,7 @@ class PySchedulerLexer(object):
         t.type = "STRING_CONTINUE"
         assert not t.lexer.is_raw, "only occurs outside of quoted strings"
         t.lexer.lineno += 1
+        self.on_string = True
 
     def t_newline(self,t):
         r"\n+"
@@ -230,6 +237,7 @@ class PySchedulerLexer(object):
     def t_SINGLEQ1_SINGLEQ2_TRIPLEQ1_TRIPLEQ2_escaped(self,t):
         r"\\(.|\n)"
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         t.lexer.lineno += t.value.count("\n")
         return t
 
@@ -245,18 +253,21 @@ class PySchedulerLexer(object):
     def t_TRIPLEQ1_simple(self,t):
         r"[^'\\]+"
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         t.lexer.lineno += t.value.count("\n")
         return t
 
     def t_TRIPLEQ1_q1_but_not_triple(self,t):
         r"'(?!'')"
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         return t
 
     def t_TRIPLEQ1_end(self,t):
         r"'''"
         t.type = "STRING_END"
         t.lexer.pop_state()
+        self.on_string = False
         t.lexer.is_raw = False
         return t
 
@@ -274,22 +285,26 @@ class PySchedulerLexer(object):
         r'[^"\\]+'
         t.type = "STRING_CONTINUE"
         t.lexer.lineno += t.value.count("\n")
+        self.on_string = True
         return t
 
     def t_TRIPLEQ2_q2_but_not_triple(self,t):
         r'"(?!"")'
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         return t
 
     def t_TRIPLEQ2_end(self,t):
         r'"""'
         t.type = "STRING_END"
         t.lexer.pop_state()
+        self.on_string = False
         t.lexer.is_raw = False
         return t
 
     t_TRIPLEQ1_ignore = "" 
     t_TRIPLEQ2_ignore = "" 
+    
 
     def t_TRIPLEQ1_error(self,t):
         self.raise_syntax_error()
@@ -311,12 +326,14 @@ class PySchedulerLexer(object):
     def t_SINGLEQ1_simple(self,t):
         r"[^'\\\n]+"
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         return t
 
     def t_SINGLEQ1_end(self,t):
         r"'"
         t.type = "STRING_END"
         t.lexer.pop_state()
+        self.on_string = False
         t.lexer.is_raw = False
         return t
 
@@ -333,11 +350,13 @@ class PySchedulerLexer(object):
     def t_SINGLEQ2_simple(self,t):
         r'[^"\\\n]+'
         t.type = "STRING_CONTINUE"
+        self.on_string = True
         return t
 
     def t_SINGLEQ2_end(self,t):
         r'"'
         t.type = "STRING_END"
+        self.on_string = False
         t.lexer.pop_state()
         t.lexer.is_raw = False
         return t
@@ -374,6 +393,9 @@ class PySchedulerLexer(object):
         return self._new_token("INDENT", lineno)
 
     def t_error(self,t):
+        # print('Illegal character "{}"'.format(t.value[0]))
+        # t.lexer.skip(1)
+        # exit()
         self.raise_syntax_error("invalid syntax", t)
 
     def _parse_quoted_string(self,start_tok, string_toks):
@@ -390,6 +412,7 @@ class PySchedulerLexer(object):
             string_toks = []
             for tok in token_stream:
                 if tok.type == "STRING_END":
+                    self.on_string = False
                     break
                 else:
                     assert tok.type == "STRING_CONTINUE", tok.type
